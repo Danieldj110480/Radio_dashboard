@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { db, auth } from "./firebase";
 
 const statuses = [
   'Pendiente', 'Por grabar', 'Pendiente de horario', 'Por validar en parrilla', 'Por confirmar',
@@ -8,16 +11,98 @@ const statuses = [
 ];
 
 export default function Admin({ catalog }) {
+  const [user, setUser] = useState(undefined);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [authError, setAuthError] = useState('');
+
   const [state, setState] = useState(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('/radio-planner-state.json?v=' + Date.now())
-      .then(res => res.json())
-      .then(data => setState(data))
-      .catch(() => setMessage('Error cargando estado.'));
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+    });
+    return () => unsub();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    async function loadState() {
+      try {
+        const docSnap = await getDoc(doc(db, "system", "state"));
+        if (docSnap.exists()) {
+          setState(docSnap.data());
+        } else {
+          const res = await fetch('/radio-planner-state.json?v=' + Date.now());
+          const data = await res.json();
+          setState(data);
+        }
+      } catch (e) {
+        setMessage('Error cargando estado de Firebase.');
+      }
+    }
+    loadState();
+  }, [user]);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      setAuthError('Credenciales incorrectas.');
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
+  if (user === undefined) {
+    return <div className="wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}><div className="badge">Verificando sesión...</div></div>;
+  }
+
+  if (user === null) {
+    return (
+      <div className="wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
+        <div className="panel" style={{ width: '100%', maxWidth: 400, padding: 40 }}>
+          <div style={{ textAlign: 'center', marginBottom: 30 }}>
+            <h2>Acceso Restringido</h2>
+            <p className="small" style={{ color: 'var(--text-muted)' }}>Ingresa tus credenciales administrativas</p>
+          </div>
+          {authError && <div style={{ color: 'var(--error)', marginBottom: 20, textAlign: 'center', fontSize: 14 }}>{authError}</div>}
+          <form onSubmit={handleLogin}>
+            <div style={{ marginBottom: 20 }}>
+              <input 
+                type="email" 
+                placeholder="Correo electrónico" 
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-sm)', background: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid var(--line)' }}
+                required
+              />
+            </div>
+            <div style={{ marginBottom: 30 }}>
+              <input 
+                type="password" 
+                placeholder="Contraseña" 
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: 'var(--radius-sm)', background: 'rgba(0,0,0,0.3)', color: 'white', border: '1px solid var(--line)' }}
+                required
+              />
+            </div>
+            <button type="submit" className="primary" style={{ width: '100%', padding: '14px' }}>INGRESAR</button>
+            <div style={{ marginTop: 20, textAlign: 'center' }}>
+              <a href="#" style={{ color: 'var(--text-muted)', fontSize: 12, textDecoration: 'none' }}>Volver al dashboard</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   if (!state) return <div className="wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
     <div className="badge">Autenticando consola administrativa...</div>
@@ -54,19 +139,12 @@ export default function Admin({ catalog }) {
     setMessage('');
     try {
       const copy = { ...state, updatedAt: new Date().toISOString() };
-      const res = await fetch('/api/save-state', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(copy)
-      });
-      if (res.ok) {
-        setMessage('Configuración actualizada con éxito.');
-        setTimeout(() => setMessage(''), 3000);
-      } else {
-        setMessage('Error crítico: No se pudo guardar en el servidor.');
-      }
+      await setDoc(doc(db, "system", "state"), copy);
+      setMessage('Configuración actualizada con éxito en Firebase.');
+      setTimeout(() => setMessage(''), 3000);
     } catch (e) {
-      setMessage('Error de red: Conexión fallida.');
+      console.error(e);
+      setMessage('Error crítico: No se pudo guardar en la base de datos.');
     }
     setSaving(false);
   };
@@ -80,7 +158,10 @@ export default function Admin({ catalog }) {
           <span className="badge" style={{ marginBottom: 10 }}>MODO ADMINISTRADOR</span>
           <h1 style={{ fontSize: '32px' }}>Consola Operativa</h1>
         </div>
-        <a href="#" className="badge" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.1)', color: '#fff' }}>← VOLVER AL DASHBOARD</a>
+        <div style={{ display: 'flex', gap: 15, alignItems: 'center' }}>
+          <button onClick={handleLogout} style={{ background: 'transparent', border: '1px solid var(--line)', color: 'white', padding: '8px 16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 12 }}>CERRAR SESIÓN</button>
+          <a href="#" className="badge" style={{ textDecoration: 'none', background: 'rgba(255,255,255,0.1)', color: '#fff' }}>← VOLVER</a>
+        </div>
       </header>
       
       {message && (
@@ -225,9 +306,9 @@ export default function Admin({ catalog }) {
           onClick={handleSave} 
           disabled={saving}
           className="primary"
-          style={{ width: '100%', maxWidth: 400, padding: '16px', fontSize: '16px' }}
+          style={{ width: '100%', maxWidth: 400, padding: '16px', fontSize: '16px', boxShadow: '0 10px 20px rgba(0,0,0,0.5)' }}
         >
-          {saving ? 'PROCESANDO CAMBIOS...' : 'GUARDAR Y PUBLICAR DASHBOARD'}
+          {saving ? 'PROCESANDO CAMBIOS...' : 'GUARDAR EN FIREBASE'}
         </button>
       </div>
 

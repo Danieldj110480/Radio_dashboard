@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { catalog } from './catalog';
 import Admin from './Admin';
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "./firebase";
 
 const statusClass = (value) => 'status-' + String(value || '').toLowerCase().replaceAll(' ', '-');
 
@@ -17,16 +19,26 @@ function App() {
   }, []);
 
   useEffect(() => {
-    async function loadState() {
-      try {
-        const res = await fetch('/radio-planner-state.json?v=' + Date.now(), { cache: 'no-store' });
-        const data = await res.json();
-        setState(data);
-      } catch (err) {
-        setError(true);
+    const unsub = onSnapshot(doc(db, "system", "state"), async (docSnap) => {
+      if (docSnap.exists()) {
+        setState(docSnap.data());
+        setError(false);
+      } else {
+        try {
+          const res = await fetch('/radio-planner-state.json?v=' + Date.now(), { cache: 'no-store' });
+          const data = await res.json();
+          setState(data);
+          setError(false);
+        } catch (err) {
+          setError(true);
+        }
       }
-    }
-    loadState();
+    }, (err) => {
+      console.error(err);
+      setError(true);
+    });
+
+    return () => unsub();
   }, [route]);
 
   if (route === '#admin') {
