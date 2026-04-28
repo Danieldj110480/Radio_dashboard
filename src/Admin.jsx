@@ -190,7 +190,7 @@ export default function Admin({ catalog }) {
                   <strong>{p.title}</strong>
                   <span style={{ color: 'var(--text-muted)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em' }}>ID: {p.id}</span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12 }}>
+                <div className="admin-list-grid">
                   <select 
                     value={current.status} 
                     onChange={e => handleChangeProgram(p.id, 'status', e.target.value)}
@@ -236,7 +236,7 @@ export default function Admin({ catalog }) {
                   <strong>{meta.title}</strong>
                   <span style={{ color: 'var(--text-muted)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em' }}>ID: {id}</span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12 }}>
+                <div className="admin-list-grid">
                   <select 
                     value={current.status} 
                     onChange={e => handleChangePodcast(id, 'status', e.target.value)}
