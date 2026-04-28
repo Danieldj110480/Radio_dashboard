@@ -96,7 +96,7 @@ function App() {
     <div className="wrap">
       <header className="hero">
         <div className="hero-top">
-          <span className="badge">⚡ Bax Operations Engine</span>
+          <span className="badge">⚡ Gestionado por Backstage AI</span>
           <span className="badge">
             🕒 Sincronizado: {new Date(state.updatedAt).toLocaleString('es-EC', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })}
           </span>
@@ -261,7 +261,7 @@ function App() {
       </section>
 
       <footer className="footer">
-        <p>Radio UTPL Operating System · Powered by Bax Intelligence</p>
+        <p>Radio UTPL Operating System · Gestionado por Backstage AI</p>
         <div style={{ marginTop: '12px' }}>
           <a href="#admin" style={{ color: 'var(--accent-light)', textDecoration: 'none', fontSize: '12px', fontWeight: 600 }}>ACCESO ADMINISTRATIVO</a>
         </div>
