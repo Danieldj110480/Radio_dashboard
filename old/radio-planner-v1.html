@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Radio UTPL Planner</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #111a2f;
+      --panel-2: #18233e;
+      --line: #2a3a60;
+      --text: #eff4ff;
+      --muted: #9fb0d4;
+      --brand: #5eead4;
+      --blue: #60a5fa;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --orange: #fb923c;
+      --red: #f87171;
+      --violet: #a78bfa;
+      --pink: #f472b6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, #172554 0%, #0b1220 35%, #09101b 100%);
+      color: var(--text);
+    }
+    .wrap { max-width: 1500px; margin: 0 auto; padding: 26px; }
+    .hero {
+      background: linear-gradient(135deg, rgba(49,46,129,.95), rgba(15,118,110,.94));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 26px;
+      padding: 28px;
+      box-shadow: 0 20px 80px rgba(0,0,0,.34);
+    }
+    h1,h2,h3,h4,p { margin: 0; }
+    h1 { font-size: 36px; line-height: 1.08; }
+    .subtitle { margin-top: 10px; color: #dbeafe; max-width: 1000px; line-height: 1.45; }
+    .toolbar {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #08111d;
+      background: #dff8ff;
+    }
+    button.secondary {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.14);
+    }
+    .stats {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      padding: 15px;
+    }
+    .stat .label { font-size: 12px; color: #d7e3ff; text-transform: uppercase; letter-spacing: .06em; }
+    .stat .value { margin-top: 7px; font-size: 28px; font-weight: 800; }
+    .section { margin-top: 28px; }
+    .section h2 { font-size: 24px; margin-bottom: 14px; }
+    .panel {
+      background: rgba(17,26,47,.94);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.24);
+    }
+    .grid-2 { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
+    .schedule {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(230px, 1fr));
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .day {
+      min-width: 230px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 15px;
+    }
+    .day h3 { margin-bottom: 12px; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border: 1px solid #2c3c64;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .card:last-child { margin-bottom: 0; }
+    .time { color: #93c5fd; font-size: 13px; font-weight: 800; letter-spacing: .06em; }
+    .title { margin-top: 4px; font-size: 17px; font-weight: 800; }
+    .meta { margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .chips, .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .chip, .tag {
+      border-radius: 999px;
+      border: 1px solid #355083;
+      background: #162443;
+      color: #ddecff;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .status {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+    select, textarea, input {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid #344a78;
+      background: #0f1730;
+      color: #eff4ff;
+      padding: 10px 12px;
+      font: inherit;
+    }
+    textarea { min-height: 74px; resize: vertical; }
+    .small { font-size: 12px; color: var(--muted); }
+    .list { display: grid; gap: 10px; }
+    .item {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .item strong { display: block; margin-bottom: 5px; }
+    .podcasts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    .badge-pending { color: #fde68a; }
+    .badge-ready { color: #86efac; }
+    .badge-live { color: #93c5fd; }
+    .badge-done { color: #f9a8d4; }
+    @media (max-width: 980px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      h1 { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>🎬 Planner Radio UTPL · v1</h1>
+      <p class="subtitle">Primera versión interactiva para revisar parrilla, marcar estados de programas, controlar podcasts y mantener próximos pasos visibles. Esta versión guarda tus cambios en este navegador/dispositivo.</p>
+      <div class="toolbar">
+        <button id="exportBtn">Exportar estado</button>
+        <button class="secondary" id="resetBtn">Resetear estados</button>
+        <button class="secondary" id="expandNotesBtn">Ver pendientes rápidos</button>
+      </div>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section class="section">
+      <h2>📅 Parrilla semanal</h2>
+      <div class="schedule" id="schedule"></div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="panel">
+        <h2 style="margin-bottom:14px;">⏳ Programas pendientes o por definir</h2>
+        <div class="list" id="pendingPrograms"></div>
+      </div>
+      <div class="panel">
+        <h2 style="margin-bottom:14px;">⚠️ Alertas operativas</h2>
+        <div class="list" id="alerts"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="panel">
+        <h2 style="margin-bottom:14px;">🎧 Podcasts / Spotify</h2>
+        <div class="podcasts" id="podcasts"></div>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="panel">
+        <h2 style="margin-bottom:14px;">✅ Próximas acciones</h2>
+        <div class="list" id="actions"></div>
+      </div>
+      <div class="panel">
+        <h2 style="margin-bottom:14px;">📝 Nota de versión</h2>
+        <div class="list">
+          <div class="item">
+            <strong>Esta es la versión 1</strong>
+            <span class="small">Sirve para visualizar y marcar estados ya mismo. La siguiente versión puede añadir login, sincronización online, calendario y notificaciones reales.</span>
+          </div>
+          <div class="item">
+            <strong>Guardado actual</strong>
+            <span class="small">Los cambios se guardan en este navegador. Si luego quieres sincronización entre dispositivos, hacemos la v2 con backend ligero.</span>
+          </div>
+          <div class="item" id="lastSavedBox">
+            <strong>Última actualización</strong>
+            <span class="small" id="lastSavedText">Aún sin cambios.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">radio.backstageec.com · Planner inicial construido por Bax</div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'radio_utpl_planner_v1';
+
+    const programStatuses = ['Pendiente', 'Insumos recibidos', 'Listo para salir', 'Emitido'];
+    const podcastStatuses = ['Por grabar', 'Grabado', 'Por subir', 'Publicado'];
+
+    const scheduleData = {
+      lunes: [
+        {
+          id: 'equinoccio',
+          time: '08:00',
+          title: 'Equinoccio',
+          area: 'Derecho',
+          meta: 'Retransmisión desde Radio Loja hacia la página. No requiere producción; la prioridad es tener el streaming listo.',
+          tags: ['Retransmisión', 'Etiqueta domingo', 'Streaming'],
+          defaultStatus: 'Pendiente'
+        },
+        {
+          id: 'derechos-a-boca',
+          time: '11:00',
+          title: 'Derechos a Boca',
+          area: 'Cristian',
+          meta: 'Cristian envía el programa. Solo se carga en ZaraRadio. Duración variable y producción mínima.',
+          tags: ['ZaraRadio', 'Recordar escribir lunes', 'Producción mínima'],
+          defaultStatus: 'Pendiente'
+        }
+      ],
+      martes: [
+        {
+          id: 'nutri-academia',
+          time: '11:00',
+          title: 'Nutri Academia',
+          area: 'Nutrición',
+          meta: 'Cada 15 días. Encargado: Alex. Contacto relacionado: Pablo Cueva.',
+          tags: ['Quincenal', 'Nutrición'],
+          defaultStatus: 'Pendiente'
+        },
+        {
+          id: 'sembrando-salud',
+          time: '17:00',
+          title: 'Sembrando Salud',
+          area: 'Enfermería',
+          meta: 'Docente Ivo. Los insumos deben llegar viernes o máximo lunes. Sale por Facebook y streaming web.',
+          tags: ['Facebook', 'Streaming', 'Insumos previos'],
+          defaultStatus: 'Pendiente'
+        }
+      ],
+      miercoles: [
+        {
+          id: 'un-cafe-con-fabiola',
+          time: '09:00',
+          title: 'Un café con Fabiola',
+          area: 'Psicología',
+          meta: 'Empieza miércoles 22. Programa de 30 min y luego mini podcast de hasta 10 min con el invitado.',
+          tags: ['Spotify', 'Mini podcast', 'Nataly Cárdenas'],
+          defaultStatus: 'Pendiente'
+        },
+        {
+          id: 'ecoconexion',
+          time: '11:00',
+          title: 'Ecoconexión',
+          area: 'Biología y Gestión Ambiental',
+          meta: 'Ejecutiva: Salomé. Semanal. Los insumos deben llegar mínimo 2 días antes. Sale por Facebook y streaming.',
+          tags: ['Semanal', 'Salomé', '2 días antes'],
+          defaultStatus: 'Pendiente'
+        }
+      ],
+      jueves: [
+        {
+          id: 'cosechando-prevencion',
+          time: '09:30',
+          title: 'Cosechando Prevención',
+          area: 'Salomé',
+          meta: 'Cada 15 días. Todo debe enviarse con 2 días de anticipación. Sale por Facebook y streaming.',
+          tags: ['Quincenal', 'Facebook', 'Streaming'],
+          defaultStatus: 'Pendiente'
+        },
+        {
+          id: 'huella',
+          time: '11:30',
+          title: 'Huella',
+          area: 'Salomé',
+          meta: 'Cada 15 días. Salomé envía todos los insumos. Tiene auspiciantes: Ecolac.',
+          tags: ['Quincenal', 'Ecolac', 'Auspicio'],
+          defaultStatus: 'Pendiente'
+        },
+        {
+          id: 'empresaurios',
+          time: '17:00',
+          title: 'Empresaurios',
+          area: 'Administración de Empresas',
+          meta: 'Cada 3 semanas. Video de expectativa + artes idealmente el lunes. Sale por Facebook y ZaraRadio/web.',
+          tags: ['Cada 3 semanas', 'Video expectativa', 'Artes lunes'],
+          defaultStatus: 'Pendiente'
+        }
+      ],
+      viernes: []
+    };
+
+    const pendingProgramsData = [
+      {
+        id: 'rehab-project',
+        title: 'Rehab Project',
+        meta: 'Fisioterapia · Dubal Fernández · mensual. Necesita un nuevo horario final porque el hueco tentativo anterior ya lo ocupa Ecoconexión.',
+        tags: ['Pendiente reubicar', 'No jueves']
+      }
+    ];
+
+    const podcastData = [
+      {
+        id: 'maestria-ciencias-politicas',
+        title: 'Maestría en Ciencias Políticas',
+        area: 'Derecho',
+        meta: 'Estado actual: por grabar. Siguiente acción: contactar a Nicol Valarezo. Carpeta: Diálogos Jurídicos.',
+        defaultStatus: 'Por grabar'
+      },
+      {
+        id: 'neuro-relatos',
+        title: 'Neuro Relatos',
+        area: 'Psicología',
+        meta: 'Pendiente de subir a Spotify. Quedó señalado que Lourdes se encarga de la subida.',
+        defaultStatus: 'Por subir'
+      },
+      {
+        id: 'bienestar-psicologia',
+        title: 'Bienestar Psicología',
+        area: 'Psicología',
+        meta: 'Con Jhon y María Dolores. Hay 5 grabados y faltan 2 por grabar. Carpeta: Bienestar Psicología.',
+        defaultStatus: 'Grabado'
+      }
+    ];
+
+    const alertData = [
+      'El jueves sigue siendo el día más cargado de la parrilla.',
+      'Salomé concentra varios flujos: Ecoconexión, Cosechando Prevención y Huella.',
+      'Derechos a Boca depende de que Cristian mande el programa el lunes.',
+      'Empresaurios depende de artes y video de expectativa con anticipación.'
+    ];
+
+    const nextActionsData = [
+      'Confirmar nuevo horario final de Rehab Project.',
+      'Recordar a Cristian el lunes por Derechos a Boca.',
+      'Contactar a Nicol Valarezo por Maestría en Ciencias Políticas.',
+      'Revisar estado de Neuro Relatos para su subida a Spotify.',
+      'Mantener visibles las carpetas Diálogos Jurídicos y Bienestar Psicología.'
+    ];
+
+    function getState() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { programs: {}, podcasts: {}, notes: {}, updatedAt: null };
+      } catch {
+        return { programs: {}, podcasts: {}, notes: {}, updatedAt: null };
+      }
+    }
+
+    function saveState(state) {
+      state.updatedAt = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderStats();
+      renderLastSaved();
+    }
+
+    function getProgramStatus(id, defaultStatus) {
+      const state = getState();
+      return state.programs[id] || defaultStatus || 'Pendiente';
+    }
+
+    function getPodcastStatus(id, defaultStatus) {
+      const state = getState();
+      return state.podcasts[id] || defaultStatus || 'Por grabar';
+    }
+
+    function getNote(id) {
+      const state = getState();
+      return state.notes[id] || '';
+    }
+
+    function setProgramStatus(id, value) {
+      const state = getState();
+      state.programs[id] = value;
+      saveState(state);
+    }
+
+    function setPodcastStatus(id, value) {
+      const state = getState();
+      state.podcasts[id] = value;
+      saveState(state);
+    }
+
+    function setNote(id, value) {
+      const state = getState();
+      state.notes[id] = value;
+      saveState(state);
+    }
+
+    function renderStats() {
+      const state = getState();
+      const allPrograms = Object.values(scheduleData).flat();
+      const allPodcasts = podcastData;
+
+      const emitted = allPrograms.filter(p => (state.programs[p.id] || p.defaultStatus) === 'Emitido').length;
+      const ready = allPrograms.filter(p => (state.programs[p.id] || p.defaultStatus) === 'Listo para salir').length;
+      const inputs = allPrograms.filter(p => (state.programs[p.id] || p.defaultStatus) === 'Insumos recibidos').length;
+      const published = allPodcasts.filter(p => (state.podcasts[p.id] || p.defaultStatus) === 'Publicado').length;
+
+      document.getElementById('stats').innerHTML = `
+        <div class="stat"><div class="label">Programas en parrilla</div><div class="value">${allPrograms.length}</div></div>
+        <div class="stat"><div class="label">Emitidos</div><div class="value">${emitted}</div></div>
+        <div class="stat"><div class="label">Listos para salir</div><div class="value">${ready}</div></div>
+        <div class="stat"><div class="label">Insumos recibidos</div><div class="value">${inputs}</div></div>
+        <div class="stat"><div class="label">Podcasts publicados</div><div class="value">${published}</div></div>
+        <div class="stat"><div class="label">Pendientes de horario</div><div class="value">${pendingProgramsData.length}</div></div>
+      `;
+    }
+
+    function renderSchedule() {
+      const days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+      const labels = { lunes:'Lunes', martes:'Martes', miercoles:'Miércoles', jueves:'Jueves', viernes:'Viernes' };
+      const container = document.getElementById('schedule');
+      container.innerHTML = days.map(day => `
+        <div class="day">
+          <h3>${labels[day]}</h3>
+          ${scheduleData[day].length ? scheduleData[day].map(renderProgramCard).join('') : `
+            <div class="card">
+              <div class="title">Espacio libre</div>
+              <div class="meta">Disponible para reubicar programas, especiales o pilotos futuros.</div>
+            </div>`}
+        </div>
+      `).join('');
+
+      bindProgramEvents();
+    }
+
+    function renderProgramCard(program) {
+      const status = getProgramStatus(program.id, program.defaultStatus);
+      const note = getNote(program.id);
+      return `
+        <div class="card">
+          <div class="time">${program.time}</div>
+          <div class="title">${program.title}</div>
+          <div class="meta"><strong>${program.area}</strong><br>${program.meta}</div>
+          <div class="chips">${program.tags.map(tag => `<span class="chip">${tag}</span>`).join('')}</div>
+          <div class="status">
+            <select data-type="program-status" data-id="${program.id}">
+              ${programStatuses.map(s => `<option value="${s}" ${s===status?'selected':''}>${s}</option>`).join('')}
+            </select>
+            <textarea data-type="note" data-id="${program.id}" placeholder="Notas rápidas...">${note}</textarea>
+          </div>
+        </div>
+      `;
+    }
+
+    function bindProgramEvents() {
+      document.querySelectorAll('select[data-type="program-status"]').forEach(el => {
+        el.addEventListener('change', e => setProgramStatus(e.target.dataset.id, e.target.value));
+      });
+      document.querySelectorAll('textarea[data-type="note"]').forEach(el => {
+        el.addEventListener('input', e => setNote(e.target.dataset.id, e.target.value));
+      });
+    }
+
+    function renderPendingPrograms() {
+      document.getElementById('pendingPrograms').innerHTML = pendingProgramsData.map(item => {
+        const note = getNote(item.id);
+        return `
+          <div class="item">
+            <strong>${item.title}</strong>
+            <span class="small">${item.meta}</span>
+            <div class="chips">${item.tags.map(tag => `<span class="chip">${tag}</span>`).join('')}</div>
+            <div style="margin-top:10px;"><textarea data-type="note" data-id="${item.id}" placeholder="Definir siguiente paso...">${note}</textarea></div>
+          </div>
+        `;
+      }).join('');
+
+      document.querySelectorAll('#pendingPrograms textarea[data-type="note"]').forEach(el => {
+        el.addEventListener('input', e => setNote(e.target.dataset.id, e.target.value));
+      });
+    }
+
+    function renderAlerts() {
+      document.getElementById('alerts').innerHTML = alertData.map(item => `
+        <div class="item"><strong>Atención</strong><span class="small">${item}</span></div>
+      `).join('');
+    }
+
+    function renderPodcasts() {
+      document.getElementById('podcasts').innerHTML = podcastData.map(podcast => {
+        const status = getPodcastStatus(podcast.id, podcast.defaultStatus);
+        const note = getNote(podcast.id);
+        return `
+          <div class="card" style="margin-bottom:0;">
+            <div class="title">${podcast.title}</div>
+            <div class="meta"><strong>${podcast.area}</strong><br>${podcast.meta}</div>
+            <div class="status">
+              <select data-type="podcast-status" data-id="${podcast.id}">
+                ${podcastStatuses.map(s => `<option value="${s}" ${s===status?'selected':''}>${s}</option>`).join('')}
+              </select>
+              <textarea data-type="note" data-id="${podcast.id}" placeholder="Notas de producción / Spotify...">${note}</textarea>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.querySelectorAll('select[data-type="podcast-status"]').forEach(el => {
+        el.addEventListener('change', e => setPodcastStatus(e.target.dataset.id, e.target.value));
+      });
+      document.querySelectorAll('#podcasts textarea[data-type="note"]').forEach(el => {
+        el.addEventListener('input', e => setNote(e.target.dataset.id, e.target.value));
+      });
+    }
+
+    function renderActions() {
+      document.getElementById('actions').innerHTML = nextActionsData.map(item => `
+        <div class="item"><strong>Siguiente paso</strong><span class="small">${item}</span></div>
+      `).join('');
+    }
+
+    function renderLastSaved() {
+      const state = getState();
+      const el = document.getElementById('lastSavedText');
+      if (!state.updatedAt) {
+        el.textContent = 'Aún sin cambios guardados.';
+        return;
+      }
+      const d = new Date(state.updatedAt);
+      el.textContent = `Último cambio: ${d.toLocaleString('es-EC')}`;
+    }
+
+    function exportState() {
+      const state = getState();
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'radio-utpl-planner-v1.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function resetState() {
+      if (!confirm('¿Resetear estados y notas guardadas en este navegador?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      init();
+    }
+
+    function showNotesSummary() {
+      const state = getState();
+      const notes = Object.entries(state.notes || {}).filter(([,v]) => String(v).trim());
+      if (!notes.length) {
+        alert('No hay notas guardadas todavía.');
+        return;
+      }
+      const lines = notes.map(([k,v]) => `• ${k}: ${v}`).join('\n\n');
+      alert(lines);
+    }
+
+    function init() {
+      renderStats();
+      renderSchedule();
+      renderPendingPrograms();
+      renderAlerts();
+      renderPodcasts();
+      renderActions();
+      renderLastSaved();
+    }
+
+    document.getElementById('exportBtn').addEventListener('click', exportState);
+    document.getElementById('resetBtn').addEventListener('click', resetState);
+    document.getElementById('expandNotesBtn').addEventListener('click', showNotesSummary);
+
+    init();
+  </script>
+</body>
+</html>

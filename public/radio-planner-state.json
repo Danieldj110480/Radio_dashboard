@@ -1,0 +1,99 @@
+{
+  "version": 2,
+  "managedBy": "Bax",
+  "managementMode": "telegram-updated",
+  "updatedAt": "2026-04-28T01:00:13.832Z",
+  "summary": {
+    "focus": "Seguimiento operativo de Radio UTPL",
+    "note": "Este planner se actualiza desde Telegram cuando Daniel le indica a Bax lo que ya se hizo o lo que cambió."
+  },
+  "programs": {
+    "equinoccio": {
+      "status": "Emitido",
+      "note": "Programa Emitido en la Web 27/04/2026"
+    },
+    "derechos-a-boca": {
+      "status": "Pendiente",
+      "note": "Recordar a Daniel escribir a Cristian el lunes. Cargar en ZaraRadio al recibir."
+    },
+    "maestria-ciencias-politicas": {
+      "status": "Por confirmar",
+      "note": "Tentativo martes 10:00-11:00. Daniel envió correo; falta confirmación de Nicole Valarezo."
+    },
+    "nutri-academia": {
+      "status": "Emitido",
+      "note": "Emitido semana anterior. Alex. Quincenal. A la espera de esta semana."
+    },
+    "sembrando-salud": {
+      "status": "Pendiente",
+      "note": "Inicia jueves 2026-05-14 17:00. Erika. Pregrabado. Imagen lunes antes. Grabación miércoles 10-11."
+    },
+    "un-cafe-con-fabiola": {
+      "status": "Pendiente",
+      "note": "Miércoles 09:00. Programa 30m + mini podcast 10m. Pendiente guest/topic para Spotify."
+    },
+    "ecoconexion": {
+      "status": "Emitido",
+      "note": "Emitido semana anterior. Miércoles 11:00. Salomé. Insumos próxima semana recibidos."
+    },
+    "cosechando-prevencion": {
+      "status": "Emitido",
+      "note": "Emitido semana anterior. Jueves 09:30. Quincenal. A la espera de esta semana."
+    },
+    "huella": {
+      "status": "Emitido",
+      "note": "Emitido semana anterior. Jueves 11:30. Quincenal. A la espera de esta semana."
+    },
+    "empresaurios": {
+      "status": "Emitido",
+      "note": "Emitido semana anterior. Jueves 17:00 (cada 3 sem). A la espera de esta semana."
+    },
+    "rincon-economico": {
+      "status": "Pendiente",
+      "note": "Jueves 15:00. Docente Vanessa. Facebook + ZaraRadio."
+    },
+    "conectando-con-tu-mente": {
+      "status": "Emitido",
+      "note": "Emitido semana anterior. Viernes 09:30. A la espera de insumos."
+    },
+    "rehab-project": {
+      "status": "Pendiente",
+      "note": "Viernes 11:00. Mensual. Dubal Fernández. Inicia 2026-05-08. Fechas: 08-May, 05-Jun, 03-Jul, 31-Jul."
+    }
+  },
+  "pendingPrograms": [],
+  "podcasts": {
+    "maestria-ciencias-politicas": {
+      "status": "Por confirmar",
+      "note": "Derecho. Carpeta: Diálogos Jurídicos. Pendiente Nicole Valarezo."
+    },
+    "neuro-relatos": {
+      "status": "Por subir",
+      "note": "Psicología. Lourdes sube a Spotify."
+    },
+    "bienestar-psicologia": {
+      "status": "En proceso",
+      "note": "Jhon/María Dolores. 5 grabados, 2 pendientes. Carpeta: Bienestar Psicología."
+    }
+  },
+  "alerts": [
+    "El jueves sigue siendo el día más cargado de la parrilla, y ahora además incluye Rincón Económico a las 15:00.",
+    "Salomé concentra varios flujos de programas e insumos.",
+    "Derechos a Boca depende del recordatorio a Cristian los lunes.",
+    "Empresaurios requiere coordinación anticipada de video y artes.",
+    "Posible choque el jueves 17:00 entre Sembrando Salud y Empresaurios desde el 2026-05-14; confirmar antes de cerrar ese horario al aire."
+  ],
+  "nextActions": [
+    "Calendario de arranque desde el 27 de abril.",
+    "Tener presentes las primeras cuatro fechas confirmadas de Rehab Project: 2026-05-08, 2026-06-05, 2026-07-03 y 2026-07-31.",
+    "Mantener recordatorio a Cristian por Derechos a Boca.",
+    "Esperar confirmación del martes 10:00-11:00 para podcasts de Derecho y luego enviar Zoom.",
+    "Revisar el estado real de Neuro Relatos en Spotify.",
+    "Confirmar si Empresaurios mantiene el jueves 17:00 cada 3 semanas antes de fijar Sembrando Salud al aire en ese mismo horario."
+  ],
+  "calendar": {
+    "seasonStart": "2026-04-20",
+    "firstMonday": "2026-04-27",
+    "note": "Programación operativa activa. Semana del 27 de abril de 2026."
+  }
+}

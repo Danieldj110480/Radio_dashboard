@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Radio UTPL Planner</title>
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg2: #0b1327;
+      --panel: rgba(15, 23, 42, 0.82);
+      --panel-strong: rgba(17, 24, 39, 0.96);
+      --line: rgba(148, 163, 184, 0.16);
+      --text: #eff6ff;
+      --muted: #9fb0c9;
+      --cyan: #22d3ee;
+      --blue: #60a5fa;
+      --violet: #a78bfa;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --orange: #fb923c;
+      --red: #f87171;
+      --pink: #f472b6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(34,211,238,0.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(167,139,250,0.18), transparent 35%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1520px; margin: 0 auto; padding: 28px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 30px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: linear-gradient(135deg, rgba(30,41,59,.92), rgba(12,74,110,.82) 45%, rgba(91,33,182,.8));
+      box-shadow: 0 24px 80px rgba(0,0,0,.35);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -100px -100px auto;
+      width: 300px;
+      height: 300px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(34,211,238,.24), transparent 70%);
+      pointer-events: none;
+    }
+    h1,h2,h3,h4,p { margin: 0; }
+    h1 { font-size: 40px; line-height: 1.05; }
+    .subtitle {
+      margin-top: 12px;
+      max-width: 980px;
+      color: #dbeafe;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+    .hero-top {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      font-size: 13px;
+      font-weight: 700;
+      color: #e8f3ff;
+    }
+    .badge.version-badge {
+      background: rgba(52,211,153,.14);
+      border-color: rgba(52,211,153,.28);
+      color: #bbf7d0;
+    }
+    .stats {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+    }
+    .stat .label { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: #d9e7ff; }
+    .stat .value { margin-top: 8px; font-size: 28px; font-weight: 800; }
+    .section { margin-top: 28px; }
+    .section-title {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+    }
+    .section-title h2 { font-size: 24px; }
+    .dot { width: 12px; height: 12px; border-radius: 999px; background: var(--cyan); box-shadow: 0 0 18px rgba(34,211,238,.7); }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 18px 42px rgba(0,0,0,.22);
+      backdrop-filter: blur(12px);
+    }
+    .schedule {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(240px, 1fr));
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .launch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .launch-card {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid #243557;
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .launch-card .date {
+      color: #8fd8ff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .launch-card .dayname {
+      margin-top: 6px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .launch-card ul {
+      margin: 12px 0 0 18px;
+      padding: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 13px;
+    }
+    .day {
+      min-width: 240px;
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+    }
+    .day h3 { margin-bottom: 12px; font-size: 18px; }
+    .card {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border: 1px solid #243557;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .card:last-child { margin-bottom: 0; }
+    .time { color: #8fd8ff; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .title { margin-top: 6px; font-size: 18px; font-weight: 800; }
+    .meta { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .chip {
+      padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      background: #12223f; border: 1px solid #314b7d; color: #d8e9ff;
+    }
+    .status-row {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 800;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .status-pendiente, .status-por-grabar, .status-pendiente-de-horario, .status-por-validar-en-parrilla, .status-por-confirmar { background: rgba(251,191,36,.12); color: #fde68a; border-color: rgba(251,191,36,.28); }
+    .status-insumos-recibidos, .status-grabado, .status-en-proceso, .status-confirmado { background: rgba(96,165,250,.12); color: #bfdbfe; border-color: rgba(96,165,250,.28); }
+    .status-listo-para-salir, .status-publicado, .status-arte-publicado { background: rgba(52,211,153,.12); color: #bbf7d0; border-color: rgba(52,211,153,.28); }
+    .status-emitido, .status-transmitido, .status-por-subir { background: rgba(244,114,182,.12); color: #fbcfe8; border-color: rgba(244,114,182,.28); }
+    .status-note {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #dbe6ff;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.03);
+      border: 1px dashed rgba(255,255,255,.1);
+      line-height: 1.45;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; }
+    .list { display: grid; gap: 10px; }
+    .item {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(15,23,42,.78);
+    }
+    .item strong { display: block; margin-bottom: 5px; }
+    .small { color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .podcasts {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px;
+    }
+    .footer { margin-top: 28px; text-align: center; color: var(--muted); font-size: 13px; }
+    a.link { color: #a5f3fc; text-decoration: none; }
+    @media (max-width: 980px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      h1 { font-size: 31px; }
+      .schedule { grid-template-columns: repeat(5, minmax(220px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-top">
+        <span class="badge">🎛️ Planner gestionado por Bax</span>
+        <span class="badge" id="updatedAtBadge">Actualizando...</span>
+        <span class="badge">📡 radio.backstageec.com</span>
+        <span class="badge version-badge">version 2026-04-23 03:09</span>
+      </div>
+      <h1>Radio UTPL · Centro de control</h1>
+      <p class="subtitle">Versión visual mejorada para revisar la parrilla, el estado de programas y podcasts, y los próximos pasos operativos. Desde ahora la lógica es simple: Daniel avisa por Telegram lo que ya ocurrió y Bax actualiza este tablero.</p>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><span class="dot"></span><h2>Calendario de arranque</h2></div>
+      <div class="panel">
+        <p class="small" id="launchNote"></p>
+        <div class="launch-grid" id="launchCalendar" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><span class="dot"></span><h2>Parrilla semanal</h2></div>
+      <div class="schedule" id="schedule"></div>
+    </section>
+
+    <section class="section grid-2">
+      <div>
+        <div class="section-title"><span class="dot"></span><h2>Alertas</h2></div>
+        <div class="panel list" id="alerts"></div>
+      </div>
+      <div>
+        <div class="section-title"><span class="dot"></span><h2>Siguientes pasos</h2></div>
+        <div class="panel list" id="nextActions"></div>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div>
+        <div class="section-title"><span class="dot"></span><h2>Programas pendientes / en ajuste</h2></div>
+        <div class="panel list" id="pendingPrograms"></div>
+      </div>
+      <div>
+        <div class="section-title"><span class="dot"></span><h2>Podcasts</h2></div>
+        <div class="panel podcasts" id="podcasts"></div>
+      </div>
+    </section>
+
+    <div class="footer">Panel operativo de Radio UTPL gestionado por Bax.</div>
+  </div>
+
+  <script>
+    const catalog = {
+      schedule: {
+        lunes: [
+          { id: 'equinoccio', time: '08:00', title: 'Equinoccio', area: 'Radio Loja', meta: 'Retransmisión / enlace de señal.', tags: ['Lunes', 'Streaming'] },
+          { id: 'derechos-a-boca', time: '11:30', title: 'Derechos a Boca', area: 'Derecho', meta: 'Cristian envía el programa para carga en ZaraRadio.', tags: ['ZaraRadio', 'Recordatorio lunes'] }
+        ],
+        martes: [
+          { id: 'maestria-ciencias-politicas', time: '10:00', title: 'Maestría en Ciencias Políticas', area: 'Derecho / Diálogos Jurídicos', meta: 'Tentativo: 10:00 a 11:00. Por confirmar confirmación de correo y Zoom.', tags: ['Podcast', 'Tentativo'] },
+          { id: 'nutri-academia', time: '11:00', title: 'Nutri Academia', area: 'Nutrición', meta: 'Programa quincenal. Encargado: Alex. Contacto relacionado: Pablo Cueva.', tags: ['Quincenal', 'Nutrición'] }
+        ],
+        miercoles: [
+          { id: 'un-cafe-con-fabiola', time: '09:00', title: 'Un café con Fabiola', area: 'Psicología', meta: 'Programa de 30 minutos + mini podcast posterior con invitado.', tags: ['Spotify', 'Mini podcast'] },
+          { id: 'ecoconexion', time: '11:00', title: 'Ecoconexión', area: 'Biología y Gestión Ambiental', meta: 'Salomé. Semanal. Insumos 2 días antes. Sale por Facebook y streaming.', tags: ['Semanal', 'Salomé'] }
+        ],
+        jueves: [
+          { id: 'cosechando-prevencion', time: '09:30', title: 'Cosechando Prevención', area: 'Salomé', meta: 'Programa quincenal con insumos 2 días antes. Sale por Facebook y streaming.', tags: ['Quincenal', 'Facebook'] },
+          { id: 'huella', time: '11:30', title: 'Huella', area: 'Salomé', meta: 'Quincenal. Programa "El pulso de la innovación" (2026-04-09) ya completado. Auspicio: Ecolac.', tags: ['Quincenal', 'Emitido', 'Ecolac'] },
+          { id: 'rincon-economico', time: '15:00', title: 'Rincón Económico', area: 'Vanessa', meta: 'Docente Vanessa. Se mantiene jueves 15:00. Sale por Facebook y ZaraRadio.', tags: ['Facebook', 'ZaraRadio'] },
+          { id: 'sembrando-salud', time: '17:00', title: 'Sembrando Salud', area: 'Enfermería', meta: 'Erika. Desde 2026-05-14 pasa a jueves 17:00 (podcast pregrabado). Grabación miércoles 10-11.', tags: ['Podcast', 'Pregrabado'] },
+          { id: 'empresaurios', time: '17:00', title: 'Empresaurios', area: 'Administración de Empresas', meta: 'Cada 3 semanas. Posible choque con Sembrando Salud el 2026-05-14.', tags: ['Cada 3 semanas', 'Artes lunes'] }
+        ],
+        viernes: [
+          { id: 'conectando-con-tu-mente', time: '09:30', title: 'Conectando con tu mente', area: 'Psicología', meta: 'Bloque matutino de los viernes. Revisar si requiere producción activa.', tags: ['Viernes', 'Psicología'] },
+          { id: 'rehab-project', time: '11:00', title: 'Rehab Project', area: 'Fisioterapia', meta: 'Viernes 11:00. Programa mensual (8 mayo, 5 junio, 3 julio, 31 julio).', tags: ['Viernes 11:00', 'Mensual', 'Fisioterapia'] }
+        ]
+      },
+      podcasts: {
+        'maestria-ciencias-politicas': { title: 'Maestría en Ciencias Políticas', area: 'Derecho' },
+        'neuro-relatos': { title: 'Neuro Relatos', area: 'Psicología' },
+        'bienestar-psicologia': { title: 'Bienestar Psicología', area: 'Psicología' }
+      }
+    };
+
+    const statusClass = (value) => 'status-' + String(value || '').toLowerCase().replaceAll(' ', '-');
+
+    async function loadState() {
+      const res = await fetch('radio-planner-state.json?v=' + Date.now(), { cache: 'no-store' });
+      return await res.json();
+    }
+
+    function renderLaunchCalendar(state) {
+      const target = document.getElementById('launchCalendar');
+      const note = document.getElementById('launchNote');
+      const firstMonday = new Date((state.calendar && state.calendar.firstMonday) || '2026-04-20T00:00:00');
+      note.textContent = (state.calendar && state.calendar.note) || 'Inicio de programación pendiente.';
+      const days = [
+        { key: 'lunes', label: 'Lunes', offset: 0 },
+        { key: 'martes', label: 'Martes', offset: 1 },
+        { key: 'miercoles', label: 'Miércoles', offset: 2 },
+        { key: 'jueves', label: 'Jueves', offset: 3 },
+        { key: 'viernes', label: 'Viernes', offset: 4 }
+      ];
+      target.innerHTML = days.map(day => {
+        const d = new Date(firstMonday);
+        d.setDate(d.getDate() + day.offset);
+        const formatted = d.toLocaleDateString('es-EC', { day: '2-digit', month: 'long' });
+        const shows = (catalog.schedule[day.key] || []).map(item => `<li><strong>${item.time}</strong> · ${item.title}</li>`).join('');
+        return `<div class="launch-card"><div class="date">${formatted}</div><div class="dayname">${day.label}</div><ul>${shows || '<li>Sin programa fijo todavía.</li>'}</ul></div>`;
+      }).join('');
+    }
+
+    function renderStats(state) {
+      const programs = Object.values(catalog.schedule).flat();
+      const programState = state.programs || {};
+      const podcastState = state.podcasts || {};
+      const emittedCount = programs.filter(p => {
+        const s = (programState[p.id]?.status || '').toLowerCase();
+        return s === 'emitido' || s === 'transmitido';
+      }).length;
+      const readyCount = programs.filter(p => {
+        const s = (programState[p.id]?.status || '').toLowerCase();
+        return s === 'listo para salir' || s === 'arte publicado' || s === 'confirmado';
+      }).length;
+      const inputsCount = programs.filter(p => {
+        const s = (programState[p.id]?.status || '').toLowerCase();
+        return s === 'insumos recibidos' || s === 'en proceso';
+      }).length;
+      const podcastsPublished = Object.values(podcastState).filter(p => p.status === 'Publicado').length;
+      document.getElementById('stats').innerHTML = `
+        <div class="stat"><div class="label">Programas en parrilla</div><div class="value">${programs.length}</div></div>
+        <div class="stat"><div class="label">En proceso</div><div class="value">${inputsCount}</div></div>
+        <div class="stat"><div class="label">Listos / Publicados</div><div class="value">${readyCount}</div></div>
+        <div class="stat"><div class="label">Emitidos</div><div class="value">${emittedCount}</div></div>
+        <div class="stat"><div class="label">Podcasts publicados</div><div class="value">${podcastsPublished}</div></div>
+        <div class="stat"><div class="label">Gestión</div><div class="value">Bax</div></div>
+      `;
+      const d = new Date(state.updatedAt);
+      document.getElementById('updatedAtBadge').textContent = 'Actualizado: ' + d.toLocaleString('es-EC');
+    }
+
+    function renderSchedule(state) {
+      const labels = { lunes:'Lunes', martes:'Martes', miercoles:'Miércoles', jueves:'Jueves', viernes:'Viernes' };
+      const target = document.getElementById('schedule');
+      const pendingById = Object.fromEntries((state.pendingPrograms || []).map(item => [item.id, item]));
+      target.innerHTML = Object.entries(catalog.schedule).map(([day, items]) => `
+        <div class="day">
+          <h3>${labels[day]}</h3>
+          ${items.length ? items.map(item => {
+            const current = state.programs[item.id] || pendingById[item.id] || { status: 'Pendiente', note: '' };
+            return `
+              <div class="card">
+                <div class="time">${item.time}</div>
+                <div class="title">${item.title}</div>
+                <div class="meta"><strong>${item.area}</strong><br>${item.meta}</div>
+                <div class="chips">${item.tags.map(tag => `<span class="chip">${tag}</span>`).join('')}</div>
+                <div class="status-row">
+                  <span class="status-pill ${statusClass(current.status)}">${current.status}</span>
+                </div>
+                <div class="status-note">${current.note || 'Sin nota operativa todavía.'}</div>
+              </div>
+            `;
+          }).join('') : `
+            <div class="card"><div class="title">Espacio libre</div><div class="meta">Disponible para reubicar, especiales o futuros programas.</div></div>`}
+        </div>
+      `).join('');
+    }
+
+    function renderPendingPrograms(state) {
+      const target = document.getElementById('pendingPrograms');
+      const items = state.pendingPrograms || [];
+      target.innerHTML = items.length ? items.map(item => `
+        <div class="item"><strong>${item.title}</strong><span class="status-pill ${statusClass(item.status)}">${item.status}</span><div class="small" style="margin-top:10px;">${item.note}</div></div>
+      `).join('') : '<div class="item"><strong>Sin ajustes pendientes</strong><div class="small">La parrilla visible ya incorpora los cambios principales reportados.</div></div>';
+    }
+
+    function renderAlerts(state) {
+      document.getElementById('alerts').innerHTML = (state.alerts || []).map(alert => `<div class="item"><strong>Atención</strong><div class="small">${alert}</div></div>`).join('');
+    }
+
+    function renderPodcasts(state) {
+      const target = document.getElementById('podcasts');
+      target.innerHTML = Object.entries(state.podcasts || {}).map(([id, item]) => {
+        const meta = catalog.podcasts[id] || { title: id, area: '' };
+        return `
+          <div class="card" style="margin-bottom:0;">
+            <div class="title">${meta.title}</div>
+            <div class="meta"><strong>${meta.area}</strong></div>
+            <div class="status-row"><span class="status-pill ${statusClass(item.status)}">${item.status}</span></div>
+            <div class="status-note">${item.note || 'Sin nota.'}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderActions(state) {
+      document.getElementById('nextActions').innerHTML = (state.nextActions || []).map(action => `<div class="item"><strong>Siguiente paso</strong><div class="small">${action}</div></div>`).join('');
+    }
+
+    async function init() {
+      try {
+        const state = await loadState();
+        renderStats(state);
+        renderLaunchCalendar(state);
+        renderSchedule(state);
+        renderPendingPrograms(state);
+        renderAlerts(state);
+        renderPodcasts(state);
+        renderActions(state);
+      } catch (err) {
+        document.body.innerHTML = '<div style="padding:40px;color:white;font-family:sans-serif;">No se pudo cargar el planner.</div>';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

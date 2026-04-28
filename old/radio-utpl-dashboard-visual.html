@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Radio UTPL</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121932;
+      --panel-2: #182142;
+      --text: #ecf1ff;
+      --muted: #a8b3d1;
+      --line: #28345f;
+      --green: #31c48d;
+      --yellow: #f5c451;
+      --red: #f87171;
+      --blue: #60a5fa;
+      --violet: #a78bfa;
+      --cyan: #22d3ee;
+      --pink: #f472b6;
+      --orange: #fb923c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, #0a0f1d 0%, #111933 100%);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #172554 0%, #312e81 45%, #0f766e 100%);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    h1,h2,h3,h4,p { margin: 0; }
+    .hero h1 { font-size: 36px; line-height: 1.1; margin-bottom: 10px; }
+    .hero p { color: #dde6ff; max-width: 1000px; }
+    .stats {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .stat {
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .stat .k { color: #dbe6ff; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+    .stat .v { font-size: 28px; font-weight: 800; margin-top: 6px; }
+    .section { margin-top: 26px; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .section-title h2 { font-size: 24px; }
+    .dot {
+      width: 12px; height: 12px; border-radius: 999px;
+      background: var(--cyan);
+      box-shadow: 0 0 18px rgba(34,211,238,.7);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+    }
+    .panel {
+      background: rgba(18,25,50,.92);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.25);
+    }
+    .panel h3 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 999px;
+      background: #1f2a4f; border: 1px solid #31406f; color: #e8efff;
+      font-size: 13px; font-weight: 600;
+    }
+    .chip.green { background: rgba(49,196,141,.12); border-color: rgba(49,196,141,.35); color: #baf5dd; }
+    .chip.yellow { background: rgba(245,196,81,.12); border-color: rgba(245,196,81,.35); color: #fde6a4; }
+    .chip.red { background: rgba(248,113,113,.12); border-color: rgba(248,113,113,.35); color: #fecaca; }
+    .chip.blue { background: rgba(96,165,250,.12); border-color: rgba(96,165,250,.35); color: #c7ddff; }
+    .chip.violet { background: rgba(167,139,250,.12); border-color: rgba(167,139,250,.35); color: #e1d5ff; }
+    .chip.orange { background: rgba(251,146,60,.12); border-color: rgba(251,146,60,.35); color: #fed7aa; }
+    .schedule {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(220px, 1fr));
+      gap: 14px;
+      overflow-x: auto;
+    }
+    .day {
+      min-width: 220px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+    }
+    .day h3 { font-size: 19px; margin-bottom: 12px; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border: 1px solid #26345e;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .card:last-child { margin-bottom: 0; }
+    .time { font-size: 13px; color: #9fc3ff; font-weight: 800; letter-spacing: .05em; }
+    .title { font-size: 17px; font-weight: 800; margin-top: 4px; }
+    .meta { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.45; }
+    .tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #334675;
+      background: #172144;
+      color: #d9e5ff;
+    }
+    .table {
+      width: 100%; border-collapse: collapse; overflow: hidden;
+      border-radius: 18px;
+    }
+    .table th, .table td {
+      text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top;
+      font-size: 14px;
+    }
+    .table th { color: #bdd2ff; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+    .table tr:last-child td { border-bottom: none; }
+    .list { display: grid; gap: 10px; }
+    .item {
+      padding: 14px; border-radius: 16px; border: 1px solid var(--line); background: var(--panel-2);
+    }
+    .item strong { display:block; margin-bottom: 5px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; color: var(--muted); }
+    .footer { margin-top: 18px; font-size: 12px; color: #91a2cc; }
+    @media (max-width: 980px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>🎙️ Dashboard Visual · Radio UTPL</h1>
+      <p>Mapa operativo consolidado de la parrilla semanal, flujos por programa, podcasts producidos/en proceso y alertas de coordinación para emisión, streaming, Facebook, ZaraRadio y Spotify.</p>
+      <div class="stats">
+        <div class="stat"><div class="k">Programas activos / definidos</div><div class="v">9</div></div>
+        <div class="stat"><div class="k">Programas tentativos</div><div class="v">1</div></div>
+        <div class="stat"><div class="k">Podcasts en radar</div><div class="v">3</div></div>
+        <div class="stat"><div class="k">Bloque más cargado</div><div class="v">Jueves</div></div>
+        <div class="stat"><div class="k">Alertas operativas</div><div class="v">4</div></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><span class="dot"></span><h2>📅 Parrilla semanal</h2></div>
+      <div class="schedule">
+        <div class="day">
+          <h3>Lunes</h3>
+          <div class="card">
+            <div class="time">08:00</div>
+            <div class="title">Equinoccio</div>
+            <div class="meta">Derecho · retransmisión desde Radio Loja hacia la página · sin producción.</div>
+            <div class="tags"><span class="tag">Streaming listo</span><span class="tag">Etiqueta domingo</span></div>
+          </div>
+          <div class="card">
+            <div class="time">11:00</div>
+            <div class="title">Derechos a Boca</div>
+            <div class="meta">Cristian envía el programa · duración variable · solo cargar en ZaraRadio.</div>
+            <div class="tags"><span class="tag">Producción mínima</span><span class="tag">Recordar escribir a Cristian</span></div>
+          </div>
+        </div>
+
+        <div class="day">
+          <h3>Martes</h3>
+          <div class="card">
+            <div class="time">11:00</div>
+            <div class="title">Nutri Academia</div>
+            <div class="meta">Nutrición · Alex · cada 15 días · horario definido para no cargar el jueves.</div>
+            <div class="tags"><span class="tag">Quincenal</span><span class="tag">Contacto: Pablo Cueva</span></div>
+          </div>
+          <div class="card">
+            <div class="time">17:00</div>
+            <div class="title">Sembrando Salud</div>
+            <div class="meta">Enfermería · docente Ivo · insumos viernes o máximo lunes.</div>
+            <div class="tags"><span class="tag">Facebook</span><span class="tag">Streaming web</span></div>
+          </div>
+        </div>
+
+        <div class="day">
+          <h3>Miércoles</h3>
+          <div class="card">
+            <div class="time">09:00</div>
+            <div class="title">Un café con Fabiola</div>
+            <div class="meta">Psicología · inicia miércoles 22 · 30 min + mini podcast de hasta 10 min con invitado.</div>
+            <div class="tags"><span class="tag">Spotify description con invitado</span><span class="tag">Nataly Cárdenas</span></div>
+          </div>
+          <div class="card">
+            <div class="time">11:00</div>
+            <div class="title">Ecoconexión</div>
+            <div class="meta">Biología y Gestión Ambiental · Salomé · insumos con 2 días de anticipación.</div>
+            <div class="tags"><span class="tag">Facebook</span><span class="tag">Streaming web</span></div>
+          </div>
+        </div>
+
+        <div class="day">
+          <h3>Jueves</h3>
+          <div class="card">
+            <div class="time">09:30</div>
+            <div class="title">Cosechando Prevención</div>
+            <div class="meta">Salomé · cada 15 días · todo se envía con 2 días de anticipación.</div>
+            <div class="tags"><span class="tag">Facebook</span><span class="tag">Streaming web</span></div>
+          </div>
+          <div class="card">
+            <div class="time">11:30</div>
+            <div class="title">Huella</div>
+            <div class="meta">Cada 15 días · Salomé envía todos los insumos · auspiciantes: Ecolac.</div>
+            <div class="tags"><span class="tag">Quincenal</span><span class="tag">Auspicio</span></div>
+          </div>
+          <div class="card">
+            <div class="time">17:00</div>
+            <div class="title">Empresaurios</div>
+            <div class="meta">Estudiantes de 2do de Administración · cada 3 semanas · inicia jueves 23.</div>
+            <div class="tags"><span class="tag">Video expectativa</span><span class="tag">Artes idealmente lunes</span><span class="tag">Facebook + ZaraRadio/web</span></div>
+          </div>
+        </div>
+
+        <div class="day">
+          <h3>Viernes</h3>
+          <div class="card">
+            <div class="time">11:00</div>
+            <div class="title">Rehab Project</div>
+            <div class="meta">Fisioterapia · Dubal Fernández · mensual. Inicio confirmado: 8 de mayo. Primeras emisiones: 8 mayo, 5 junio, 3 julio y 31 julio.</div>
+            <div class="tags"><span class="tag">Mensual</span><span class="tag">Fechas confirmadas</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="panel">
+        <h3>🧭 Flujos clave por programa</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Programa</th>
+              <th>Clave operativa</th>
+              <th>Materiales / salida</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Equinoccio</strong><br><span class="small">Derecho</span></td>
+              <td>Monitorear que el streaming esté listo para retransmitir señal de Radio Loja.</td>
+              <td>Etiqueta domingo · página de la radio.</td>
+            </tr>
+            <tr>
+              <td><strong>Derechos a Boca</strong><br><span class="small">Cristian</span></td>
+              <td>Escribir a Cristian el lunes para que envíe el programa.</td>
+              <td>Solo ZaraRadio · sin producción fuerte.</td>
+            </tr>
+            <tr>
+              <td><strong>Un café con Fabiola</strong><br><span class="small">Psicología</span></td>
+              <td>Programa largo de 30 min + mini podcast posterior con invitado.</td>
+              <td>Descripción Spotify cuando Daniel pase invitado + tema.</td>
+            </tr>
+            <tr>
+              <td><strong>Empresaurios</strong><br><span class="small">Admin. Empresas</span></td>
+              <td>Coordinar video de expectativa y artes con anticipación.</td>
+              <td>Facebook + ZaraRadio + streaming web.</td>
+            </tr>
+            <tr>
+              <td><strong>Sembrando Salud / Ecoconexión / Cosechando / Huella</strong></td>
+              <td>Todos dependen de insumos previos con anticipación.</td>
+              <td>Facebook + streaming web; Salomé concentra varios flujos.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h3>⚠️ Alertas operativas</h3>
+        <div class="list">
+          <div class="item"><strong>Jueves sigue siendo el día más sensible</strong><span class="muted">Aunque ya se liberó el bloque de las 11:00, sigue concentrando tres programas y dos quincenales.</span></div>
+          <div class="item"><strong>Rehab Project ya tiene arranque confirmado</strong><span class="muted">Viernes 11:00. Primeras cuatro emisiones: 8 mayo, 5 junio, 3 julio y 31 julio.</span></div>
+          <div class="item"><strong>Salomé concentra varios programas</strong><span class="muted">Ecoconexión, Cosechando Prevención y Huella dependen de su flujo de insumos.</span></div>
+          <div class="item"><strong>Spotify requiere tablero aparte</strong><span class="muted">Ya hay podcasts por grabar, por subir y parcialmente grabados. Conviene revisar carpetas físicas y responsables.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="panel">
+        <h3>🎧 Podcasts · producidos / en producción</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Podcast</th>
+              <th>Área</th>
+              <th>Estado</th>
+              <th>Siguiente acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Maestría en Ciencias Políticas</strong><br><span class="small">Carpeta: Diálogos Jurídicos</span></td>
+              <td>Derecho</td>
+              <td><span class="chip yellow">Por confirmar · martes 10:00–11:00</span></td>
+              <td>Daniel ya envió el correo; cuando confirmen, enviará el enlace de Zoom.</td>
+            </tr>
+            <tr>
+              <td><strong>Neuro Relatos</strong></td>
+              <td>Psicología</td>
+              <td><span class="chip yellow">Por subir</span></td>
+              <td>Subida a Spotify por <strong>Lourdes</strong>.</td>
+            </tr>
+            <tr>
+              <td><strong>Bienestar Psicología</strong><br><span class="small">Carpeta: Bienestar Psicología</span></td>
+              <td>Psicología</td>
+              <td><span class="chip blue">5 grabados / 2 pendientes</span></td>
+              <td>Terminar las 2 grabaciones faltantes con <strong>Jhon</strong> y <strong>María Dolores</strong>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h3>✅ Próximas acciones concretas</h3>
+        <div class="chips" style="margin-bottom:12px;">
+          <span class="chip green">Parrilla base cerrada</span>
+          <span class="chip blue">Dashboard listo</span>
+          <span class="chip yellow">Pendientes activos</span>
+        </div>
+        <div class="list">
+          <div class="item"><strong>1. Tener visibles las fechas de Rehab Project</strong><span class="muted">Primeras cuatro emisiones confirmadas: 8 mayo, 5 junio, 3 julio y 31 julio.</span></div>
+          <div class="item"><strong>2. Preparar rutina de recordatorios</strong><span class="muted">Cristian lunes, artes de Empresaurios lunes, insumos de programas con 2 días de anticipación.</span></div>
+          <div class="item"><strong>3. Revisar carpetas de podcasts en la computadora</strong><span class="muted">Diálogos Jurídicos y Bienestar Psicología ya están identificadas.</span></div>
+          <div class="item"><strong>4. Armar tablero Spotify</strong><span class="muted">Separar: por grabar, por editar, por subir, publicado.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">Archivo generado en workspace: <strong>radio-utpl-dashboard-visual.html</strong> · versión de trabajo del 2026-04-01</div>
+  </div>
+</body>
+</html>
