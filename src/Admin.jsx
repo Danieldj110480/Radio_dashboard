@@ -109,16 +109,30 @@ export default function Admin({ catalog }) {
   </div>;
 
   const handleChangeProgram = (id, field, value) => {
-    setState(s => ({
-      ...s,
-      programs: {
-        ...s.programs,
-        [id]: {
-          ...s.programs[id],
-          [field]: value
+    setState(s => {
+      let newState = {
+        ...s,
+        programs: {
+          ...s.programs,
+          [id]: {
+            ...s.programs[id],
+            [field]: value
+          }
         }
+      };
+
+      if (field === 'status') {
+         const oldStatus = s.programs?.[id]?.status || '';
+         const isEmitted = (v) => ['emitido', 'transmitido', 'publicado'].includes((v||'').toLowerCase());
+         if (!isEmitted(oldStatus) && isEmitted(value)) {
+             newState.totalEmitted = (newState.totalEmitted || 0) + 1;
+             if (!newState.programs[id].emittedDate) {
+                 newState.programs[id].emittedDate = new Date().toLocaleDateString('es-EC', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-'); // simple format approximation
+             }
+         }
       }
-    }));
+      return newState;
+    });
   };
 
   const handleChangePodcast = (id, field, value) => {
@@ -179,6 +193,21 @@ export default function Admin({ catalog }) {
         </div>
       )}
 
+      <section className="section" style={{ marginTop: 0 }}>
+        <div className="section-title"><span className="dot"></span><h2>Estadísticas Globales</h2></div>
+        <div className="panel list">
+          <div className="item" style={{ background: 'rgba(255,255,255,0.01)', display: 'flex', alignItems: 'center', justifyItems: 'space-between' }}>
+            <strong style={{ flex: 1, margin: 0 }}>Total Programas Emitidos (Histórico acumulado)</strong>
+            <input 
+              type="number" 
+              value={state.totalEmitted || 0} 
+              onChange={e => setState({...state, totalEmitted: parseInt(e.target.value) || 0})}
+              style={{ width: '120px', textAlign: 'center' }}
+            />
+          </div>
+        </div>
+      </section>
+
       <section className="section">
         <div className="section-title"><span className="dot"></span><h2>Programación Semanal</h2></div>
         <div className="panel list" style={{ gap: '16px' }}>
@@ -210,6 +239,33 @@ export default function Admin({ catalog }) {
                     value={current.note || ''} 
                     onChange={e => handleChangeProgram(p.id, 'note', e.target.value)}
                     placeholder="Agregar nota de producción..."
+                    style={{ 
+                      padding: '10px', 
+                      borderRadius: 'var(--radius-sm)', 
+                      background: 'rgba(0,0,0,0.3)', 
+                      color: 'white', 
+                      border: '1px solid var(--line)'
+                    }}
+                  />
+                </div>
+                <div className="admin-list-grid" style={{ marginTop: '12px' }}>
+                  <input 
+                    type="date" 
+                    value={current.emittedDate || ''} 
+                    onChange={e => handleChangeProgram(p.id, 'emittedDate', e.target.value)}
+                    style={{ 
+                      padding: '10px', 
+                      borderRadius: 'var(--radius-sm)', 
+                      background: 'rgba(0,0,0,0.3)', 
+                      color: 'white', 
+                      border: '1px solid var(--line)'
+                    }}
+                  />
+                  <input 
+                    type="text" 
+                    value={current.link || ''} 
+                    onChange={e => handleChangeProgram(p.id, 'link', e.target.value)}
+                    placeholder="Pegar el enlace público del programa emitido..."
                     style={{ 
                       padding: '10px', 
                       borderRadius: 'var(--radius-sm)', 

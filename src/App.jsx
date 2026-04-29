@@ -121,8 +121,8 @@ function App() {
             <div className="value">{readyCount}</div>
           </div>
           <div className="stat">
-            <div className="label">Emitidos</div>
-            <div className="value">{emittedCount}</div>
+            <div className="label">Emitidos (Histórico)</div>
+            <div className="value">{state.totalEmitted ?? emittedCount ?? 0}</div>
           </div>
           <div className="stat">
             <div className="label">Podcasts</div>
@@ -186,6 +186,8 @@ function App() {
                     <div style={{ marginTop: '16px' }}>
                       <span className={`status-pill ${statusClass(current.status)}`}>{current.status}</span>
                     </div>
+                    {current.emittedDate && <div className="meta" style={{ marginTop: '8px' }}>📅 Emitido: {current.emittedDate}</div>}
+                    {current.link && <div className="meta" style={{ marginTop: '4px' }}>🔗 <a href={current.link} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-light)', textDecoration: 'none', fontWeight: 'bold' }}>Acceder al Programa</a></div>}
                     {current.note && <div className="status-note">{current.note}</div>}
                   </div>
                 );
