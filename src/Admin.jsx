@@ -125,7 +125,12 @@ export default function Admin({ catalog }) {
          const oldStatus = s.programs?.[id]?.status || '';
          const isEmitted = (v) => ['emitido', 'transmitido', 'publicado'].includes((v||'').toLowerCase());
          if (!isEmitted(oldStatus) && isEmitted(value)) {
-             newState.totalEmitted = (newState.totalEmitted || 0) + 1;
+             let currentTotal = s.totalEmitted;
+             if (currentTotal === undefined) {
+                 const currentPrograms = Object.values(s.programs || {});
+                 currentTotal = currentPrograms.filter(p => isEmitted(p.status)).length;
+             }
+             newState.totalEmitted = currentTotal + 1;
              if (!newState.programs[id].emittedDate) {
                  newState.programs[id].emittedDate = new Date().toLocaleDateString('es-EC', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-'); // simple format approximation
              }

@@ -65,7 +65,7 @@ function App() {
   
   const emittedCount = programs.filter(p => {
     const s = (programState[p.id]?.status || '').toLowerCase();
-    return s === 'emitido' || s === 'transmitido';
+    return s === 'emitido' || s === 'transmitido' || s === 'publicado';
   }).length;
   
   const readyCount = programs.filter(p => {
