@@ -109,35 +109,48 @@ export default function Admin({ catalog }) {
   </div>;
 
   const handleChangeProgram = (id, field, value) => {
-    setState(s => {
-      let newState = {
-        ...s,
-        programs: {
-          ...s.programs,
-          [id]: {
-            ...s.programs[id],
-            [field]: value
-          }
-        }
-      };
+    if (field === 'status') {
+      const oldStatus = state.programs?.[id]?.status || '';
+      const isEmitted = (v) => ['emitido', 'transmitido', 'publicado'].includes((v || '').toLowerCase());
 
-      if (field === 'status') {
-         const oldStatus = s.programs?.[id]?.status || '';
-         const isEmitted = (v) => ['emitido', 'transmitido', 'publicado'].includes((v||'').toLowerCase());
-         if (!isEmitted(oldStatus) && isEmitted(value)) {
-             let currentTotal = s.totalEmitted;
-             if (currentTotal === undefined) {
-                 const currentPrograms = Object.values(s.programs || {});
-                 currentTotal = currentPrograms.filter(p => isEmitted(p.status)).length;
-             }
-             newState.totalEmitted = currentTotal + 1;
-             if (!newState.programs[id].emittedDate) {
-                 newState.programs[id].emittedDate = new Date().toLocaleDateString('es-EC', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-'); // simple format approximation
-             }
-         }
+      if (!isEmitted(oldStatus) && isEmitted(value)) {
+        if (window.confirm(`¿Confirmar emisión y reiniciar programa para la próxima semana?\n\n- Se sumará +1 al contador histórico.\n- El enlace y la fecha quedarán guardados y visibles para el público.\n- El estado volverá a "Pendiente" para iniciar el nuevo ciclo.`)) {
+          setState(s => {
+            let currentTotal = s.totalEmitted;
+            if (currentTotal === undefined) {
+              const currentPrograms = Object.values(s.programs || {});
+              currentTotal = currentPrograms.filter(p => isEmitted(p.status)).length;
+            }
+            return {
+              ...s,
+              totalEmitted: currentTotal + 1,
+              programs: {
+                ...s.programs,
+                [id]: {
+                  ...s.programs[id],
+                  status: 'Pendiente', // Reiniciar estado
+                  note: '', // Limpiar nota
+                  emittedDate: s.programs[id]?.emittedDate || new Date().toLocaleDateString('es-EC', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-')
+                }
+              }
+            };
+          });
+        }
+        return; // Si cancela, no hacemos nada y el select vuelve a su estado anterior
       }
-      return newState;
-    });
+    }
+
+    // Actualización normal
+    setState(s => ({
+      ...s,
+      programs: {
+        ...s.programs,
+        [id]: {
+          ...s.programs[id],
+          [field]: value
+        }
+      }
+    }));
   };
 
   const handleChangePodcast = (id, field, value) => {
