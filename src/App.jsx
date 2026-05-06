@@ -186,8 +186,24 @@ function App() {
                     <div style={{ marginTop: '16px' }}>
                       <span className={`status-pill ${statusClass(current.status)}`}>{current.status}</span>
                     </div>
-                    {current.emittedDate && <div className="meta" style={{ marginTop: '8px' }}>📅 Emitido: {current.emittedDate}</div>}
-                    {current.link && <div className="meta" style={{ marginTop: '4px' }}>🔗 <a href={current.link} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-light)', textDecoration: 'none', fontWeight: 'bold' }}>Acceder al Programa</a></div>}
+                    {(current.history && current.history.length > 0) ? (
+                      <div className="meta" style={{ marginTop: '12px', background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: 'var(--radius-sm)' }}>
+                        <strong style={{ display: 'block', marginBottom: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>📻 Histórico de Emisiones</strong>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {current.history.map((h, hidx) => (
+                            <div key={hidx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: hidx < current.history.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', paddingBottom: hidx < current.history.length - 1 ? '6px' : '0' }}>
+                              <span>📅 {h.date}</span>
+                              {h.link ? <a href={h.link} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-light)', textDecoration: 'none', fontWeight: 600 }}>▶ Reproducir</a> : <span style={{ opacity: 0.5, fontSize: '11px' }}>Sin enlace</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {(current.lastEmissionDate || current.emittedDate) && <div className="meta" style={{ marginTop: '8px' }}>📅 Última Emisión: {current.lastEmissionDate || current.emittedDate}</div>}
+                        {(current.lastEmissionLink || current.link) && <div className="meta" style={{ marginTop: '4px' }}>🔗 <a href={current.lastEmissionLink || current.link} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-light)', textDecoration: 'none', fontWeight: 'bold' }}>Acceder al Programa</a></div>}
+                      </>
+                    )}
                     {current.note && <div className="status-note">{current.note}</div>}
                   </div>
                 );

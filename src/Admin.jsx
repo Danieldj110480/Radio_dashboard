@@ -114,23 +114,37 @@ export default function Admin({ catalog }) {
       const isEmitted = (v) => ['emitido', 'transmitido', 'publicado'].includes((v || '').toLowerCase());
 
       if (!isEmitted(oldStatus) && isEmitted(value)) {
-        if (window.confirm(`¿Confirmar emisión y reiniciar programa para la próxima semana?\n\n- Se sumará +1 al contador histórico.\n- El enlace y la fecha quedarán guardados y visibles para el público.\n- El estado volverá a "Pendiente" para iniciar el nuevo ciclo.`)) {
+        let currentLink = state.programs?.[id]?.link || '';
+        if (!currentLink) {
+          const promptLink = window.prompt('Por favor, ingresa el enlace de la emisión (o déjalo en blanco si no hay):');
+          if (promptLink === null) return; // User cancelled
+          currentLink = promptLink;
+        }
+
+        if (window.confirm(`¿Confirmar emisión y reiniciar programa para la próxima semana?\n\n- Se sumará +1 al contador histórico.\n- El enlace y la fecha actuales quedarán guardados como "Última Emisión".\n- Los campos se limpiarán para estar listos para el nuevo ciclo.`)) {
           setState(s => {
             let currentTotal = s.totalEmitted;
             if (currentTotal === undefined) {
               const currentPrograms = Object.values(s.programs || {});
               currentTotal = currentPrograms.filter(p => isEmitted(p.status)).length;
             }
+
+            const pState = s.programs[id] || {};
+            const recordedDate = pState.emittedDate || new Date().toLocaleDateString('es-EC', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-');
+
             return {
               ...s,
               totalEmitted: currentTotal + 1,
               programs: {
                 ...s.programs,
                 [id]: {
-                  ...s.programs[id],
+                  ...pState,
                   status: 'Pendiente', // Reiniciar estado
                   note: '', // Limpiar nota
-                  emittedDate: s.programs[id]?.emittedDate || new Date().toLocaleDateString('es-EC', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-')
+                  lastEmissionDate: recordedDate,
+                  lastEmissionLink: currentLink,
+                  emittedDate: '', // Limpiar para el próximo ciclo
+                  link: ''         // Limpiar para el próximo ciclo
                 }
               }
             };
@@ -283,7 +297,7 @@ export default function Admin({ catalog }) {
                     type="text" 
                     value={current.link || ''} 
                     onChange={e => handleChangeProgram(p.id, 'link', e.target.value)}
-                    placeholder="Pegar el enlace público del programa emitido..."
+                    placeholder="Pegar el enlace del nuevo programa a emitir..."
                     style={{ 
                       padding: '10px', 
                       borderRadius: 'var(--radius-sm)', 
@@ -293,6 +307,12 @@ export default function Admin({ catalog }) {
                     }}
                   />
                 </div>
+                {(current.lastEmissionDate || current.lastEmissionLink) && (
+                  <div style={{ marginTop: '10px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                    ✅ <strong>Última emisión guardada:</strong> {current.lastEmissionDate} 
+                    {current.lastEmissionLink && <a href={current.lastEmissionLink} target="_blank" rel="noreferrer" style={{ marginLeft: '8px', color: 'var(--accent-light)', textDecoration: 'none' }}>[Ver enlace]</a>}
+                  </div>
+                )}
               </div>
             );
           })}

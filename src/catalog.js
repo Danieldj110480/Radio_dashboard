@@ -5,8 +5,7 @@ export const catalog = {
       { id: 'derechos-a-boca', time: '11:30', title: 'Derechos a Boca', area: 'Derecho', meta: 'Cristian envía el programa para carga en ZaraRadio.', tags: ['ZaraRadio', 'Recordatorio lunes'] }
     ],
     martes: [
-      { id: 'maestria-ciencias-politicas', time: '10:00', title: 'Maestría en Ciencias Políticas', area: 'Derecho / Diálogos Jurídicos', meta: 'Tentativo: 10:00 a 11:00. Por confirmar confirmación de correo y Zoom.', tags: ['Podcast', 'Tentativo'] },
-      { id: 'nutri-academia', time: '11:00', title: 'Nutri Academia', area: 'Nutrición', meta: 'Programa quincenal. Encargado: Alex. Contacto relacionado: Pablo Cueva.', tags: ['Quincenal', 'Nutrición'] }
+      { id: 'maestria-ciencias-politicas', time: '10:00', title: 'Maestría en Ciencias Políticas', area: 'Derecho / Diálogos Jurídicos', meta: 'Tentativo: 10:00 a 11:00. Por confirmar confirmación de correo y Zoom.', tags: ['Podcast', 'Tentativo'] }
     ],
     miercoles: [
       { id: 'un-cafe-con-fabiola', time: '09:00', title: 'Un café con Fabiola', area: 'Psicología', meta: 'Programa de 30 minutos + mini podcast posterior con invitado.', tags: ['Spotify', 'Mini podcast'] },
@@ -21,7 +20,8 @@ export const catalog = {
     ],
     viernes: [
       { id: 'conectando-con-tu-mente', time: '09:30', title: 'Conectando con tu mente', area: 'Psicología', meta: 'Bloque matutino de los viernes. Revisar si requiere producción activa.', tags: ['Viernes', 'Psicología'] },
-      { id: 'rehab-project', time: '11:00', title: 'Rehab Project', area: 'Fisioterapia', meta: 'Viernes 11:00. Programa mensual (8 mayo, 5 junio, 3 julio, 31 julio).', tags: ['Viernes 11:00', 'Mensual', 'Fisioterapia'] }
+      { id: 'rehab-project', time: '11:00', title: 'Rehab Project', area: 'Fisioterapia', meta: 'Viernes 11:00. Programa mensual (8 mayo, 5 junio, 3 julio, 31 julio).', tags: ['Viernes 11:00', 'Mensual', 'Fisioterapia'] },
+      { id: 'nutri-academia', time: '15:00', title: 'Nutri Academia', area: 'Nutrición', meta: 'Programa quincenal. Encargado: Alex. Contacto relacionado: Pablo Cueva.', tags: ['Quincenal', 'Nutrición'] }
     ]
   },
   podcasts: {
