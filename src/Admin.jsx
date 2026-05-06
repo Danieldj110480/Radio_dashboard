@@ -131,6 +131,7 @@ export default function Admin({ catalog }) {
 
             const pState = s.programs[id] || {};
             const recordedDate = pState.emittedDate || new Date().toLocaleDateString('es-EC', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-');
+            const newHistory = [...(pState.history || []), { date: recordedDate, link: currentLink }];
 
             return {
               ...s,
@@ -141,6 +142,7 @@ export default function Admin({ catalog }) {
                   ...pState,
                   status: 'Pendiente', // Reiniciar estado
                   note: '', // Limpiar nota
+                  history: newHistory,
                   lastEmissionDate: recordedDate,
                   lastEmissionLink: currentLink,
                   emittedDate: '', // Limpiar para el próximo ciclo
